@@ -1,0 +1,171 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>List Patient</title>
+<link rel="stylesheet" type="text/css" th:href="@{/css/style.css}" />
+<!-- <link rel="stylesheet" -->
+<!-- 	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"> -->
+<!-- <script -->
+<!-- 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script> -->
+<!-- <script -->
+<!-- 	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
+<!-- Bootstrap -->
+<link
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+	rel="stylesheet" />
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<style>
+.error {
+	color: red;
+	font-style: italic;
+}
+
+label {
+	font-size: 90%;
+	font-style: italic;
+	color: red;
+}
+</style>
+
+</head>
+<body>
+	<!-- Include _menu.html -->
+	<th:block th:include="/_menu"></th:block>
+
+	<div class="container main-content list">
+		<div th:if="${success}"
+			class="row alert alert-success alert-dismissible">
+			<button type="button" class="close" data-dismiss="alert"
+				aria-label="Close">
+				<span aria-hidden="true">x</span>
+			</button>
+			<span th:text="${success}"></span>
+		</div>
+		<h2>List Patient</h2>
+		<div class="row">
+
+			<a th:href="@{/addPatient}" class="btn btn-success pull-left"> <span
+				class="glyphicon glyphicon-plus"></span> Add Patient
+			</a>
+			<form class="form-inline pull-right" th:action="@{/patient/search/1}"
+				method="get">
+				<div>
+					<input type="text" name="s" id="search" /> <input type="submit"
+						value="Search" />
+				</div>
+			</form>
+		</div>
+		<th:block th:if="${#lists.isEmpty(patients.pageList)}">
+			<h3>No Patient</h3>
+		</th:block>
+		<br />
+		<th:block th:unless="${#lists.isEmpty(patients.pageList)}">
+			<div class="row">
+				<table class="table table-bordered table-hover">
+					<thead>
+						<tr>
+							<th>ID</th>
+							<th>Patient Name</th>
+							<th>Edit</th>
+							<th>Delete</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="patient: ${patients.pageList}">
+							<td th:utext="${patient.patientId}">...</td>
+							<td th:utext="${patient.patientName}">...</td>
+							<td><a th:href="@{/patient/{id}/edit(id=${patient.id})}"><span
+									class="glyphicon glyphicon-pencil"></span></a></td>
+							<td><a th:href="@{/patient/{id}/delete(id=${patient.id})}"><span
+									class="glyphicon glyphicon-trash"></span></a></td>
+						</tr>
+					</tbody>
+					<!-- 				<tr th:each="patient: ${search}"> -->
+
+					<!-- 					<td th:utext="${patient.patientId}">...</td> -->
+					<!-- 					<td th:utext="${patient.patientName}">...</td> -->
+					<!-- 				</tr> -->
+				</table>
+			</div>
+			<ul class="pagination">
+			<li
+				th:class="${currentIndex == 1}? 'page-item disabled' : 'page-item'">
+				<a class="page-link" th:href="@{/listPatient}">First</a>
+			</li>
+			<li
+				th:class="${currentIndex == 1}? 'page-item disabled': 'page-item' ">
+				<a class="page-link" aria-label="Previous"
+				th:href="@{|${baseUrl}${currentIndex - 1}|}"
+				title='Go to previous page'><span aria-hidden="true"><<</span>
+					<span class="sr-only">Previous</span></a>
+			</li>
+			<li th:each="item : ${#numbers.sequence(beginIndex,endIndex)}"
+				th:class="${item == currentIndex ? 'page-item active' :'page-item' }">
+				<a class="page-link" th:href="@{|${baseUrl}${item}|}"> <span
+					th:text='${item}'>1</span>
+			</a>
+			</li>
+			<li
+				th:class="${currentIndex == totalPageCount}? 'page-item disabled': 'page-item'">
+				<a class="page-link" aria-label="Next"
+				th:href="@{|${baseUrl}${currentIndex + 1}|}" title='Go to next page'><span
+					aria-hidden="true">>></span> <span class="sr-only">Next</span></a>
+			</li>
+			<li
+				th:class="${currentIndex == totalPageCount}? 'page-item disabled':'page-item'">
+				<a class="page-link" th:href="@{|${baseUrl}${totalPageCount}|}">Last</a>
+			</li>
+		</ul>
+		</th:block>
+		<!-- Process AJAX -->
+		<!-- 		<div class="row"> -->
+		<!-- 			<form th:action="@{/listPatient}" th:object="${patient1}" -->
+		<!-- 				method="GET"> -->
+
+		<!-- 				<select class="bs-select form-control" id="patientIdSelect" -->
+		<!-- 					onchange="patientSelect()" th:field="*{patientId}"> -->
+		<!-- 					<option value="default" selected="selected">Select</option> -->
+		<!-- 					<option th:each="patient:${listPatients}" -->
+		<!-- 						th:value="${patient.patientId}" th:text="${patient.patientName}"> -->
+		<!-- 					</option> -->
+		<!-- 				</select> -->
+		<!-- 			</form> -->
+		<!-- 			<div class="col-md-4" id="ajaxLoader" style="padding-top:4px;display:none"><img th:src="@{/images/ajaxLoader.gif}"/></div> -->
+		<!-- 		</div> -->
+		<div class="row" style="visibility: hidden" id="profileRow">
+			<div class="portlet-body">
+				<form role="form" action="#">
+					<div class="form-group">
+						<label class="control-label">Patient ID</label> <input type="text"
+							class="form-control" disabled="disabled" id="patientId" />
+					</div>
+					<div class="form-group">
+						<label class="control-label">Patient Name</label> <input
+							type="text" class="form-control" disabled="disabled"
+							id="patientName" />
+					</div>
+					<div class="form-group">
+						<label class="control-label">Age</label> <input type="text"
+							class="form-control" disabled="disabled" id="age" />
+					</div>
+					<div class="form-group">
+						<label class="control-label">Gender</label> <input type="text"
+							class="form-control" disabled="disabled" id="gender" />
+					</div>
+					<div class="form-group">
+						<label class="control-label">Date</label><input type="text"
+							class="form-control" disabled="disabled" id="time" />
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<script th:src="@{/js/ajaxLoad.js}" type="text/javascript"></script>
+</body>
+
+</html>
